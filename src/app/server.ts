@@ -3,6 +3,7 @@ import { router } from './routes/routes';
 import http from 'http';
 import { Server } from 'socket.io';
 import { config } from 'dotenv';
+import { db } from './db/db';
 
 const app = express();
 const server = http.createServer(app);
