@@ -8,5 +8,7 @@ export const Messages = db.define('messages', {
         autoIncrement: true
     },
     author: DataTypes.STRING,
-    message: DataTypes.STRING
+    message: DataTypes.STRING,
+}, {
+    timestamps: false
 });
