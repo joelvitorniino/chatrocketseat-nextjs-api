@@ -1,6 +1,6 @@
 import { Messages } from "../model/Messages";
 
-class MessageRepository {
+export class MessageRepository {
     async findAll() {
         return await Messages.findAll();
     };
@@ -12,5 +12,3 @@ class MessageRepository {
         });
     };
 };
-
-export default new MessageRepository();
