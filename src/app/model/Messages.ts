@@ -1,7 +1,7 @@
 import { db } from "../db/db";
 import { DataTypes } from 'sequelize'
 
-export const messages = db.define('messages', {
+export const Messages = db.define('messages', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
