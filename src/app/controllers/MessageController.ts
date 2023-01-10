@@ -13,4 +13,6 @@ class MessageController {
             message
         });
     };
-}
+};
+
+export default new MessageController();
