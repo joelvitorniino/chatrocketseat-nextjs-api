@@ -8,7 +8,12 @@ import MessageController from './controllers/MessageController';
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
+});
 
 config();
 
@@ -40,9 +45,10 @@ io.on('connection', async (socket) => {
     });
 
     socket.on("sendMessage", async ({ author, message }) => {
-        await messageController.store({ author, message });
+        // await messageController.store({ author, message });
 
-        socket.broadcast.emit("receivedMessage", { author, message });
+        socket.broadcast.emit("receivedMessage",    { author, message });
+        console.log({ author, message });
     });
 });
 
