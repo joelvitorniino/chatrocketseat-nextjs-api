@@ -3,8 +3,8 @@ import { router } from './routes/routes';
 import http from 'http';
 import { Server } from 'socket.io';
 import { config } from 'dotenv';
-import { db } from './db/db';
 import MessageController from './controllers/MessageController';
+import cors from 'cors';
 
 const app = express();
 const server = http.createServer(app);
@@ -18,32 +18,35 @@ const io = new Server(server, {
 
 config();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(router);
 
-io.on('connection', async (socket) => {
+io.on('connect', async (socket) => {
     console.log(`Socket connected: ${socket.id}`);
 
     const messageController = MessageController;
 
-    const messageIndex = await messageController.index();
-    const jsonStringify = JSON.stringify(messageIndex.map((data => data.toJSON())));
+    setTimeout(async () => {
+        const messageIndex = await messageController.index();
+        const jsonStringify = JSON.stringify(messageIndex.map((data => data.toJSON())));
 
-    const jsonParse = JSON.parse(jsonStringify);
+        const jsonParse = JSON.parse(jsonStringify);
 
-    let messages;
+        let messages;
 
-    jsonParse.forEach((data) => {
-        messages = [
-            {
-                author: data.author,
-                message: data.message
-            }
-        ];
+        jsonParse.forEach((data) => {
+            messages = [
+                {
+                    author: data.author,
+                    message: data.message
+                }
+            ];
         
-        socket.emit("previousMessages", messages);
-    });
+            socket.emit("previousMessages", messages);
+        });
+    }, 1500)
 
     socket.on("sendMessage", async ({ author, message }) => {
         await messageController.store({ author, message });
