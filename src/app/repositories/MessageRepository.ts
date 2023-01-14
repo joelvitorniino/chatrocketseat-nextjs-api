@@ -1,4 +1,4 @@
-import { Messages } from "../model/Messages";
+import { Messages } from "../models/Messages";
 
 export class MessageRepository {
     async findAll() {
