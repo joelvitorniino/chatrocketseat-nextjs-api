@@ -24,6 +24,7 @@
     "nodemailer-express-handlebars": "^6.0.0",
     "passport": "^0.6.0",
     "passport-google-oauth2": "^0.2.0",
+    "passport-local": "^1.0.0",
     "sequelize": "^6.28.0",
     "socket.io": "^4.5.4"
   },
@@ -39,6 +40,7 @@
     "@types/nodemailer-express-handlebars": "^4.0.2",
     "@types/passport": "^1.0.11",
     "@types/passport-google-oauth2": "^0.1.5",
+    "@types/passport-local": "^1.0.35",
     "@types/socket.io": "^3.0.2",
     "tsc": "^2.0.4",
     "typescript": "^4.9.4"
