@@ -8,6 +8,7 @@ import cors from 'cors';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
+import { passportConfig } from './utils/passportConfig';
 
 const app = express();
 const server = http.createServer(app);
@@ -27,13 +28,15 @@ app.use(express.urlencoded({ extended: true }))
 app.use(session({ secret: process.env.SECRET_KEY, resave: false, saveUninitialized: false }))
 
 app.use(cors({
-    origin: '*',
+    origin: 'http://localhost:3000',
     credentials: true
 }));
 app.use(cookieParser(process.env.SECRET_KEY))
 
 app.use(passport.initialize(  ))
 app.use(passport.session());
+
+passportConfig(passport);
 
 app.use(router);
 
