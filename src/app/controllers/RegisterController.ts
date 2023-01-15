@@ -1,7 +1,7 @@
 import { compare } from "bcryptjs";
 import { Request, Response } from "express";
 import { RegisterRepository } from "../repositories/RegisterRepository";
-import { hashPassword } from "../util/hashPassword";
+import { hashPassword } from "../utils/hashPassword";
 
 const repository = new RegisterRepository();
 
