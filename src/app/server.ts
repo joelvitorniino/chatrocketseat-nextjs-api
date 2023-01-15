@@ -5,6 +5,9 @@ import { Server } from 'socket.io';
 import { config } from 'dotenv';
 import MessageController from './controllers/MessageController';
 import cors from 'cors';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import passport from 'passport';
 
 const app = express();
 const server = http.createServer(app);
@@ -18,9 +21,20 @@ const io = new Server(server, {
 
 config();
 
-app.use(cors());
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }))
+app.use(session({ secret: process.env.SECRET_KEY, resave: false, saveUninitialized: false }))
+
+app.use(cors({
+    origin: '*',
+    credentials: true
+}));
+app.use(cookieParser(process.env.SECRET_KEY))
+
+app.use(passport.initialize(  ))
+app.use(passport.session());
+
 app.use(router);
 
 io.on('connect', async (socket) => {
