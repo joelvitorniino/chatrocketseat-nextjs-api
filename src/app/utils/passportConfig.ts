@@ -1,59 +1,60 @@
-import { PassportStatic } from "passport";
 import passportLocal from "passport-local";
-import { RegisterRepository } from "../repositories/RegisterRepository";
 import { compare } from "bcryptjs";
+import { Authenticator } from "@fastify/passport";
+import { Strategy } from "@fastify/passport";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { PrismaClient } from "@prisma/client";
 
-export const passportConfig = (passport: PassportStatic) => {
+const prisma = new PrismaClient();
+
+
+export const passportConfig = (passport: Authenticator) => {
   passport.use(
     new passportLocal.Strategy(async (email, password, done) => {
-      const registerRepository = new RegisterRepository();
-      const user = await registerRepository.findOne({ email_chat: email });
+      const user = await prisma.register.findFirst({ where: { email_chat: email } });
 
       try {
-        const jsonStringify = JSON.stringify(user.toJSON());
-        const jsonParse = JSON.parse(jsonStringify);
 
         if (!user) {
           done(null, false);
-        }
+        };
 
-        compare(password, jsonParse.password_chat, (err, response) => {
+        compare(password, user.password_chat, (err, response) => {
           if (err) throw err;
 
-          if (!jsonParse) {
+          if (!user) {
             return done(null, false);
           }
 
-          return done(null, jsonParse);
+          return done(null, user);
         });
       } catch (e) {
         return null;
       }
     })
   );
+  passport.registerUserSerializer(async (user: any, req) => user.id_chat);
 
-  passport.serializeUser((user: any, done) => {
-    done(null, user.id_chat);
-  });
-
-  passport.deserializeUser(async (id: number, done) => {
-    const registerRepository = new RegisterRepository();
-    const user = await registerRepository.findById(id);
-
+  passport.registerUserDeserializer(async (id: number, req) => {
     try {
-      const jsonStringify = JSON.stringify(user.toJSON());
-      const jsonParse = JSON.parse(jsonStringify);
+      const users = await prisma.register.findMany();
 
-      if (!user) {
-        return done(null, false);
-      }
-
-      const userInfo = {
-        id_chat: jsonParse.id_chat,
-        name_chat: jsonParse.name_chat,
+      if (!users) {
+        return;
       };
 
-      return done(null, userInfo);
+      let userInfo;
+
+      users.map(user => {
+        userInfo = {
+          id_chat: user.id_chat,
+          name_chat: user.name_chat
+        };
+
+        return userInfo;
+      });
+
+      return userInfo;
     } catch (e) {
       return null;
     }

@@ -1,18 +1,27 @@
-import express from 'express';
-import { router } from './routes/routes';
 import http from 'http';
-import { Server } from 'socket.io';
+import { Server } from 'socket.io'; 
 import { config } from 'dotenv';
-import MessageController from './controllers/MessageController';
-import cors from 'cors';
-import session from 'express-session';
-import cookieParser from 'cookie-parser';
-import passport from 'passport';
+import fastifyCors from '@fastify/cors';
+import fastifySession from '@fastify/session';
+import fastifySecureSession from '@fastify/secure-session';
+import fastifyCookie from '@fastify/cookie';
+import fastifyPassport from '@fastify/passport';
 import { passportConfig } from './utils/passportConfig';
+import fastify from 'fastify';
+import { PrismaClient } from '@prisma/client';
+import { appRoutes } from './routes/routes';
+import fastifySocket from 'fastify-socket.io';
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
+
+const prisma = new PrismaClient({
+    log: ['query']
+});
+
+const app = fastify();
+
+config();
+
+app.register(fastifySocket, {
     cors: {
         origin: '*',
         methods: ['GET', 'POST']
@@ -20,57 +29,67 @@ const io = new Server(server, {
     transports: ['websocket']
 });
 
-config();
-
-app.use(express.json());
-
-app.use(express.urlencoded({ extended: true }))
-app.use(session({ secret: process.env.SECRET_KEY, resave: false, saveUninitialized: false }))
-
-app.use(cors({
+app.register(fastifyCors, {
     origin: 'http://localhost:3000',
     credentials: true
-}));
-app.use(cookieParser(process.env.SECRET_KEY))
+});
 
-app.use(passport.initialize(  ))
-app.use(passport.session());
+app.register(fastifyCookie, {
+    secret: process.env.SECRET_KEY
+})
 
-passportConfig(passport);
 
-app.use(router);
+app.register(fastifySession, {
+    secret: process.env.SECRET_KEY,
+});
 
-io.on('connect', async (socket) => {
-    console.log(`Socket connected: ${socket.id}`);
+app.register(fastifyPassport.initialize())
 
-    const messageController = MessageController;
+app.register(fastifyPassport.secureSession());
 
-    setTimeout(async () => {
-        const messageIndex = await messageController.index();
-        const jsonStringify = JSON.stringify(messageIndex.map((data => data.toJSON())));
+passportConfig(fastifyPassport);
 
-        const jsonParse = JSON.parse(jsonStringify);
+app.register(appRoutes);
 
-        let messages;
+app.ready(err => {
+    if(err) throw err;
 
-        jsonParse.forEach((data) => {
-            messages = [
-                {
-                    author: data.author,
-                    message: data.message
+    app.io.on('connection', async (socket) => {
+        console.log(`Socket connected: ${socket.id}`);
+    
+        setTimeout(async () => {
+            const allMessages = await prisma.messages.findMany();
+    
+            let messages;
+    
+            allMessages.forEach((data) => {
+                messages = [
+                    {
+                        author: data.author,
+                        message: data.message
+                    }
+                ];
+    
+                socket.emit("previousMessages", messages);
+            });
+        }, 1500)
+    
+        socket.on("sendMessage", async ({ author, message }) => {
+            await prisma.messages.create({
+                data: {
+                    author,
+                    message
                 }
-            ];
-        
-            socket.emit("previousMessages", messages);
+            });
+    
+            socket.broadcast.emit("receivedMessage",  { author, message });
+            console.log({ author, message });
         });
-    }, 1500)
-
-    socket.on("sendMessage", async ({ author, message }) => {
-        await messageController.store({ author, message });
-
-        socket.broadcast.emit("receivedMessage",  { author, message });
-        console.log({ author, message });
     });
 });
 
-server.listen(process.env.PORT || 3001);
+app.listen({
+    port: 3001
+})
+    .then(url => console.log(url))
+    .catch(err => console.log(err))
