@@ -10,17 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Messages {
+model Message {
   id Int @id @default(autoincrement())
   author String
   message String
 }
 
 model Register {
-  id_chat Int @id @default(autoincrement())
-  name_chat String
-  email_chat String
-  password_chat String
-  password_chat_resetToken String
-  password_chat_resetExpires String
+  id Int @id @default(autoincrement())
+  name String
+  email String
+  password String
+  password_resetToken String?
+  password_resetExpires String?
 }

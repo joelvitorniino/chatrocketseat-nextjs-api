@@ -1,17 +1,8 @@
-import http from 'http';
-import { Server } from 'socket.io'; 
 import { config } from 'dotenv';
 import fastifyCors from '@fastify/cors';
-import fastifySession from '@fastify/session';
-import fastifySecureSession from '@fastify/secure-session';
-import fastifyCookie from '@fastify/cookie';
-import fastifyPassport from '@fastify/passport';
-import { passportConfig } from './utils/passportConfig';
 import fastify from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { appRoutes } from './routes/routes';
 import fastifySocket from 'fastify-socket.io';
-
 
 const prisma = new PrismaClient({
     log: ['query']
@@ -33,23 +24,6 @@ app.register(fastifyCors, {
     origin: 'http://localhost:3000',
     credentials: true
 });
-
-app.register(fastifyCookie, {
-    secret: process.env.SECRET_KEY
-})
-
-
-app.register(fastifySession, {
-    secret: process.env.SECRET_KEY,
-});
-
-app.register(fastifyPassport.initialize())
-
-app.register(fastifyPassport.secureSession());
-
-passportConfig(fastifyPassport);
-
-app.register(appRoutes);
 
 app.ready(err => {
     if(err) throw err;
