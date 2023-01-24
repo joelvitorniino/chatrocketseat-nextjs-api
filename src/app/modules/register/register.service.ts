@@ -9,19 +9,23 @@ export const createUser = async (input: CreateUserInput) => {
 
     const passwordHash = hashPassword(password);
     
-    const user = await prisma.user.create({
-        data: { ...rest, password: passwordHash } 
+    const user = await prisma.register.create({
+        data: {
+            email: input.email,
+            name: input.name,
+            password: passwordHash,
+        }
     });
 
     return user;
 };
 
 export const findUserByEmail = async (email: string) => {
-    return prisma.user.findUnique({ where: { email } });
+    return prisma.register.findUnique({ where: { email } });
 };  
 
 export const findUsers = async () => {
-    return prisma.user.findMany({
+    return prisma.register.findMany({
         select: {
             id: true,
             email: true,

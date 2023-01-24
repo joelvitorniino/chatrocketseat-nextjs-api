@@ -15,6 +15,8 @@ const createRegisterSchema = z.object({
         required_error: 'Password is required',
         invalid_type_error: 'password must be a string'
     }),
+    password_resetToken: z.string().optional(),
+    password_resetExpires: z.string().optional()
 });
 
 const createRegisterResponseSchema = z.object({
@@ -38,7 +40,7 @@ export type CreateUserInput = z.infer<typeof createRegisterSchema>;
 
 export type LoginInput = z.infer<typeof loginSchema>;
 
-export const { schemas: userSchemas, $ref } = buildJsonSchemas({
+export const { schemas: registerSchemas, $ref } = buildJsonSchemas({
     createRegisterSchema,
     createRegisterResponseSchema,
     loginSchema,

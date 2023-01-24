@@ -19,6 +19,7 @@
     "fastify-cors": "^6.1.0",
     "fastify-socket.io": "^4.0.0",
     "fastify-zod": "^1.2.0",
+    "socket.io": "^4.5.4",
     "zod": "^3.20.2",
     "zod-to-json-schema": "^3.20.2"
   },
