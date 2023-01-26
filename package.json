@@ -2,10 +2,13 @@
   "name": "chatrocketseat-nextjs-api",
   "version": "1.0.0",
   "main": "index.js",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "dev": "ts-node src/app/server.ts",
     "build": "npx tsc --build",
-    "start": "node dist/app.js"
+    "start": "node dist/server.js"
   },
   "repository": "https://github.com/joelvitorniino/chatrocketseat-nextjs-api",
   "author": "joelvitorniino <joelprofessor13@gmail.com>",
