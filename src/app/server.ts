@@ -95,7 +95,7 @@ app.ready(err => {
 });
 
 app.listen({
-    port: process.env.PORT as number || 3001
+    port: Number(process.env.PORT) || 3001
 })
     .then(url => console.log(url))
     .catch(err => console.log(err))
