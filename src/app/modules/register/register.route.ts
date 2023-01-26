@@ -24,4 +24,6 @@ export const registerRoutes = async (app: FastifyInstance) => {
     app.get('/', {
         preHandler: [app.authenticate]
     }, getUsersHandler);
+
+    app.post('/getUser', getUsersHandler);
 };

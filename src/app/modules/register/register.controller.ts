@@ -1,8 +1,10 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { createUser, findUserByEmail, findUsers } from './register.service';
+import { createUser, findNameByEmail, findUserByEmail, findUsers } from './register.service';
 import { CreateUserInput, LoginInput } from './register.schema';
 import { app } from '../../server';
 import { compare } from 'bcryptjs';
+
+import { z } from 'zod';
 
 export const registerUserHandler = async (request: FastifyRequest<{
     Body: CreateUserInput;
@@ -53,4 +55,14 @@ export const getUsersHandler = async (request: FastifyRequest, reply: FastifyRep
     const users = await findUsers();
 
     return users;
+};
+
+export const getUserNameHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+    const email = z.object({
+        email: z.string()
+    });
+
+    const user = await findNameByEmail(email.parse(request.body).email);
+
+    return reply.code(200).send({ username: user.name });
 };
