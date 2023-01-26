@@ -1,17 +1,10 @@
+
 {
-    "name": "chatrocketseat-nextjs-api-r3mi",
-    "version": 2,
-    "public": true,
-    "builds": [
+    "version": "2",
+    "rewrites": [
         {
-            "src": "src/app/server.ts",
-            "use": "@vercel/node"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "src/app/server.ts"
+            "source": "/(.*)",
+            "destination": "/api/serverless.ts"
         }
     ]
 }
