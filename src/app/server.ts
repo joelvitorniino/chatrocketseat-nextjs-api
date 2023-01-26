@@ -95,6 +95,7 @@ app.ready(err => {
 });
 
 app.listen({
+    host: "0.0.0.0",
     port: Number(process.env.PORT) || 3001
 })
     .then(url => console.log(url))
