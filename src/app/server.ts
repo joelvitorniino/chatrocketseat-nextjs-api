@@ -6,11 +6,18 @@ import fastify from 'fastify';
 import fastifySocket from 'fastify-socket.io';
 import fastifyJwt from '@fastify/jwt';
 
+import fastifySecureSession from '@fastify/secure-session';
+
+import fastifyPassport from '@fastify/passport';
+
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 import { PrismaClient } from '@prisma/client';
 import { registerSchemas } from './modules/register/register.schema';
 import { registerRoutes } from './modules/register/register.route';
+import { passportConfig } from './utils/passportConfig';
+import { googleRoute } from './modules/google/google.route';
+import { readFileSync } from 'fs';
 
 const prisma = new PrismaClient({
     log: ['query']
@@ -26,9 +33,21 @@ export const app = fastify();
 
 config();
 
+app.register(fastifySecureSession, {
+    key: readFileSync(`${__dirname}/../../not-so-secret-key`),
+    cookie: {
+        path: '/'
+    }
+});
+
+app.register(fastifyPassport.initialize());
+app.register(fastifyPassport.secureSession());
+
 app.register(fastifyJwt, {
     secret: process.env.HASH_SECRET as string,
+    decoratorName: 'authenticate'
 });
+
 
 app.decorate("authenticate", async (request: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -43,6 +62,10 @@ app.register(registerRoutes, { prefix: "api/register" });
 for(const schema of registerSchemas) {
     app.addSchema(schema);
 };
+
+passportConfig(fastifyPassport);
+
+app.register(googleRoute);
 
 app.register(fastifySocket, {
     cors: {

@@ -6,6 +6,12 @@ import { compare } from 'bcryptjs';
 
 import { z } from 'zod';
 
+declare module "fastify" {
+    export interface FastifyRequest {
+        authenticate: any;
+    }
+}
+
 export const registerUserHandler = async (request: FastifyRequest<{
     Body: CreateUserInput;
 }>, reply: FastifyReply) => {
@@ -52,8 +58,10 @@ export async function loginHandler(request: FastifyRequest<{
 };
 
 export const getUsersHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+    request.authenticate;
+    
     const users = await findUsers();
-
+    
     return users;
 };
 
