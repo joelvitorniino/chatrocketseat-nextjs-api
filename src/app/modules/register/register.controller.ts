@@ -41,6 +41,7 @@ export async function loginHandler(request: FastifyRequest<{
             message: 'Invalid email address or password'
         });
     };
+
     
     // verify password
     const correctPassword = await compare(body.password, user.password);
