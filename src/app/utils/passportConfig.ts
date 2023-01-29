@@ -1,7 +1,8 @@
 import { Authenticator } from '@fastify/passport';
-import { PrismaClient, prisma } from '@prisma/client';
 import { config } from 'dotenv';
 import { Strategy } from 'passport-google-oauth20';
+import { prisma } from './prisma';
+import { generateRandomPassword } from './generateRandomPassword';
 
 config();
 
@@ -13,32 +14,29 @@ export const passportConfig = async (passport: Authenticator) => {
     }, async(accessToken: string, refreshToken, profile, cb: CallableFunction) => {
 
         const { name, email } = profile._json;
-        
-        const chars = "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const passwordLength = 12;
-        let password = "";
 
-        for (let i = 0; i <= passwordLength; i++) {
-            let randomNumber = Math.floor(Math.random() * chars.length);
-            password += chars.substring(randomNumber, randomNumber +1);
-        };
-
-        const user = await new PrismaClient({}).register.findUnique({
+        const user = await prisma.register.findUnique({
             where: {
                 email
             }
-        })
+        });
+
+        const password = generateRandomPassword({
+            passwordLength: 40
+        });
 
         if(!user) {
-            await new PrismaClient({}).register.create({
+            await prisma.register.create({
                 data: {
                     email,
                     name,
-                    password
+                    password,
+                    account_google: true
                 }
         })
         }
-    return cb(undefined, profile)
+
+        return cb(undefined, profile)
     }));
 
     passport.registerUserDeserializer(async (id, reply) => {
