@@ -53,6 +53,12 @@ export async function loginHandler(request: FastifyRequest<{
         return { accessToken: app.jwt.sign(rest) };
     };
 
+    if(user.account_google) {
+        const { password, ...rest } = user; 
+
+        return { accessToken: app.jwt.sign(rest) };
+    }
+
     return reply.code(401).send({
         message: 'Invalid email address or password'
     });
