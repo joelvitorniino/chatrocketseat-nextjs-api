@@ -23,5 +23,5 @@ model Register {
   password String
   password_resetToken String?
   password_resetExpires String?
-  account_google String?
+  account_google Boolean?
 }
