@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { FastifyRequest, FastifyReply } from 'fastify'; 
 import z from 'zod';
 import { app } from '../../server';
+import { prisma } from '../../utils/prisma';
 
 export const googleHandler = async(request: FastifyRequest, reply: FastifyReply) => {
     reply.redirect('/');
@@ -14,7 +15,7 @@ export const loginGoogleHandler = async(request: FastifyRequest, reply: FastifyR
     })
     const { email } = user.parse(request.body);
 
-    const userData = await new PrismaClient({  }).register.findUnique({
+    const userData = await prisma.register.findUnique({
         where: {
             email
         }
