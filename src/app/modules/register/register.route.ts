@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { registerUserHandler, loginHandler, getUsersHandler } from './register.controller';
+import { registerUserHandler, loginHandler, getUsersHandler, getUserNameHandler } from './register.controller';
 import { $ref } from './register.schema';
 
 export const registerRoutes = async (app: FastifyInstance) => {
@@ -25,5 +25,5 @@ export const registerRoutes = async (app: FastifyInstance) => {
         preHandler: [app.authenticate]
     }, getUsersHandler);
 
-    app.post('/getUser', getUsersHandler);
+    app.post('/getUser', getUserNameHandler);
 };
