@@ -1,9 +1,30 @@
-import { PrismaClient } from '@prisma/client';
 import { FastifyRequest, FastifyReply } from 'fastify'; 
-import z from 'zod';
-import { app } from '../../server';
 import { prisma } from '../../utils/prisma';
+import { app } from '../../server';
 
-export const googleHandler = async(request: FastifyRequest, reply: FastifyReply) => {
-    reply.redirect('/');
+interface User {
+    _json: {
+        email: string;
+    }
+}
+
+
+export const googleAuthenticateHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+    const user = request.user as User;
+
+    const userGoogle = await prisma.register.findUnique({
+        where: {
+            email: user._json.email,
+        }
+    });
+
+    if(!userGoogle) {
+        return reply.status(403);
+    };
+
+    const { password, ...rest } = userGoogle
+
+    return {
+        accessToken: app.jwt.sign(rest)
+    } && reply.redirect('http://localhost:3000/chat')
 };
