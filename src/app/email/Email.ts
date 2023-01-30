@@ -1,6 +1,9 @@
+import { config } from "dotenv";
 import nodemailer, { Transporter } from "nodemailer";
 import hbs from "nodemailer-express-handlebars";
 import { Readable } from "nodemailer/lib/xoauth2";
+
+config();
 
 interface ITransporter {
     service: string;
