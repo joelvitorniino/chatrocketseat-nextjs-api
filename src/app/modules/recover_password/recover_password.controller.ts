@@ -32,7 +32,6 @@ export const recoverPasswordHandler = async (request: FastifyRequest, reply: Fas
 
         await prisma.register.update({
             where: {
-                id: user.id,
                 email: user.email
             },
             data: {
@@ -88,7 +87,6 @@ export const resetPaswordHandler = async (request: FastifyRequest, reply: Fastif
 
         await prisma.register.update({
             where: {
-                id: user.id,
                 email: user.email,
             },
             data: {

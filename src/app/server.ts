@@ -18,6 +18,7 @@ import { registerRoutes } from './modules/register/register.route';
 import { passportConfig } from './utils/passportConfig';
 import { googleRoute } from './modules/google/google.route';
 import { readFileSync } from 'fs';
+import { recoverPasswordRoutes } from './modules/recover_password/recover_password.routes';
 
 const prisma = new PrismaClient({
     log: ['query']
@@ -58,6 +59,7 @@ app.decorate("authenticate", async (request: FastifyRequest, reply: FastifyReply
 });
 
 app.register(registerRoutes, { prefix: "api/register" });
+app.register(recoverPasswordRoutes);
 
 for(const schema of registerSchemas) {
     app.addSchema(schema);
