@@ -61,7 +61,7 @@ export const recoverPasswordHandler = async (request: FastifyRequest, reply: Fas
     };
 };
 
-export const resetPaswordHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+export const resetPasswordHandler = async (request: FastifyRequest, reply: FastifyReply) => {
     const resetPasswordData = z.object({
         email: z.string(),
         token: z.string(),
@@ -97,5 +97,5 @@ export const resetPaswordHandler = async (request: FastifyRequest, reply: Fastif
         reply.send();
     } catch(e) {
         reply.status(400).send({ error: 'Cannot reset password, try again' });
-    }
+    };
 };
