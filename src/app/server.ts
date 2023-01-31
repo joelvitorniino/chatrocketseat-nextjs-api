@@ -6,6 +6,8 @@ import fastify from "fastify";
 import fastifySocket from "fastify-socket.io";
 import fastifyJwt from "@fastify/jwt";
 
+import fastifySecureSession from "@fastify/secure-session";
+
 import fastifyPassport from "@fastify/passport";
 
 import { FastifyRequest, FastifyReply } from "fastify";
@@ -15,6 +17,7 @@ import { registerSchemas } from "./modules/register/register.schema";
 import { registerRoutes } from "./modules/register/register.route";
 import { passportConfig } from "./utils/passportConfig";
 import { googleRoute } from "./modules/google/google.route";
+import { readFileSync } from "fs";
 import { recoverPasswordRoutes } from "./modules/recover_password/recover_password.routes";
 
 const prisma = new PrismaClient({
@@ -30,6 +33,13 @@ declare module "fastify" {
 export const app = fastify();
 
 config();
+
+app.register(fastifySecureSession, {
+  key: readFileSync(`${__dirname}/../not-so-secret-key`),
+  cookie: {
+    path: "/",
+  },
+});
 
 app.register(fastifyPassport.initialize());
 app.register(fastifyPassport.secureSession());
