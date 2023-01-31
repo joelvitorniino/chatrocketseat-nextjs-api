@@ -35,7 +35,7 @@ export const app = fastify();
 config();
 
 app.register(fastifySecureSession, {
-  key: readFileSync(`${__dirname}/../../not-so-secret-key`),
+  key: readFileSync(`${__dirname}/../not-so-secret-key`),
   cookie: {
     path: "/",
   },
