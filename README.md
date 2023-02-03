@@ -3,6 +3,7 @@
 This API was made with Fastify.
 
 ORM: Prisma
+
 Dependency of auth: Passport, JWT
 
 Instructions to run in your machine:
